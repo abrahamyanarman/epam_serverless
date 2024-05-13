@@ -5,7 +5,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>task3_api-group</groupId>
-    <artifactId>task3_api</artifactId>
+    <artifactId>task3</artifactId>
     <version>1.0.0</version>
 
     <properties>
