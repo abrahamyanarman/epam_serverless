@@ -61,8 +61,7 @@ public class ApiHandler implements RequestHandler<RequestBody, APIGatewayProxyRe
 	private void saveEventToDynamoDB(String eventData) {
 		Table table = dynamoDB.getTable(TABLE_NAME);
 		Item item = new Item().withPrimaryKey("Id", UUID.randomUUID().toString())
-				.withString("EventData", eventData)
-				.withString("Category", "Uncategorized");
+				.withString("EventData", eventData);
 		PutItemOutcome outcome = table.putItem(item);
 	}
 }
