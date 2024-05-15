@@ -17,7 +17,9 @@
             "kms:Decrypt",
             "sqs:SendMessage",
             "sqs:ReceiveMessage",
-            "sqs:DeleteMessage"
+            "sqs:DeleteMessage",
+            "sqs:GetQueueAttributes",
+            "sns:Publish"
           ],
           "Effect": "Allow",
           "Resource": "*"

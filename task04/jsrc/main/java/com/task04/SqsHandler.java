@@ -16,7 +16,8 @@ import java.util.logging.Logger;
 @LambdaHandler(lambdaName = "sqs_handler",
 	roleName = "sqs_handler-role",
 	isPublishVersion = false,
-	logsExpiration = RetentionSetting.SYNDICATE_ALIASES_SPECIFIED
+	logsExpiration = RetentionSetting.SYNDICATE_ALIASES_SPECIFIED,
+		timeout = 60
 )
 @SqsTriggerEventSource(targetQueue = "async_queue", batchSize = 1)
 public class SqsHandler implements RequestHandler<SQSEvent, Void> {

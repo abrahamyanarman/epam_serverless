@@ -16,7 +16,8 @@ import java.util.logging.Logger;
 @LambdaHandler(lambdaName = "sns_handler",
 	roleName = "sns_handler-role",
 	isPublishVersion = false,
-	logsExpiration = RetentionSetting.SYNDICATE_ALIASES_SPECIFIED
+	logsExpiration = RetentionSetting.SYNDICATE_ALIASES_SPECIFIED,
+		timeout = 60
 )
 @SnsEventSource(targetTopic = "lambda_topic")
 public class SnsHandler implements RequestHandler<SNSEvent, Void> {
