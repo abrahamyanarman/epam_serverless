@@ -49,7 +49,7 @@ public class ApiHandler implements RequestHandler<RequestBody, APIGatewayProxyRe
 
 		String eventData = new Gson().toJson(event);
 
-		saveEventToDynamoDB(eventData);
+		saveEventToDynamoDB(event);
 
 		APIGatewayProxyResponseEvent response = new APIGatewayProxyResponseEvent();
 		response.setStatusCode(201);
@@ -58,10 +58,12 @@ public class ApiHandler implements RequestHandler<RequestBody, APIGatewayProxyRe
 		return response;
 	}
 
-	private void saveEventToDynamoDB(String eventData) {
+	private void saveEventToDynamoDB(Event event) {
 		Table table = dynamoDB.getTable(TABLE_NAME);
 		Item item = new Item().withPrimaryKey("id", UUID.randomUUID().toString())
-				.withString("EventData", eventData);
+				.withInt("principalId", event.getPrincipalId())
+				.withString("createdAt", event.getCreatedAt())
+				.withMap("body", event.getBody());
 		PutItemOutcome outcome = table.putItem(item);
 	}
 }
