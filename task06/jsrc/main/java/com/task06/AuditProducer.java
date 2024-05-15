@@ -46,21 +46,21 @@ public class AuditProducer implements RequestHandler<DynamodbEvent, Void> {
 			if (record.getEventName().equals(INSERT_EVENT)) {
 				Map<String, AttributeValue> newImage = record.getDynamodb().getNewImage();
 				Item item = new Item().withPrimaryKey("id", UUID.randomUUID().toString())
-						.withString("itemKey", String.valueOf(newImage.get("key")))
+						.withString("itemKey", newImage.get("key").getS())
 						.withString("modificationTime", LocalDateTime.now().format(DateTimeFormatter.ISO_DATE_TIME))
-						.withMap("newValue", Map.of("key", String.valueOf(newImage.get("key")), "value",
-								Integer.parseInt(String.valueOf(newImage.get("value")))));
+						.withMap("newValue", Map.of("key", newImage.get("key").getS(), "value",
+								Integer.parseInt(newImage.get("value").getS())));
 				table.putItem(item);
 			}
 			if (record.getEventName().equals(MODIFY_EVENT)) {
 				Map<String, AttributeValue> newImage = record.getDynamodb().getNewImage();
 				Map<String, AttributeValue> oldImage = record.getDynamodb().getOldImage();
 				Item item = new Item().withPrimaryKey("id", UUID.randomUUID().toString())
-						.withString("itemKey", String.valueOf(oldImage.get("key")))
+						.withString("itemKey", oldImage.get("key").getS())
 						.withString("modificationTime", LocalDateTime.now().format(DateTimeFormatter.ISO_DATE_TIME))
 						.withString("updatedAttribute", "value")
-						.withInt("oldValue", Integer.parseInt(String.valueOf(oldImage.get("value"))))
-						.withInt("newValue", Integer.parseInt(String.valueOf(newImage.get("value"))));
+						.withInt("oldValue", Integer.parseInt(oldImage.get("value").getS()))
+						.withInt("newValue", Integer.parseInt(newImage.get("value").getS()));
 				table.putItem(item);
 			}
 		}
