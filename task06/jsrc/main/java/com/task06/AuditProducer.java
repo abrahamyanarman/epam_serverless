@@ -10,6 +10,8 @@ import com.amazonaws.services.lambda.runtime.RequestHandler;
 import com.amazonaws.services.lambda.runtime.events.DynamodbEvent;
 import com.amazonaws.services.lambda.runtime.events.DynamodbEvent.DynamodbStreamRecord;
 import com.amazonaws.services.lambda.runtime.events.models.dynamodb.AttributeValue;
+import com.syndicate.deployment.annotations.events.DynamoDbEvents;
+import com.syndicate.deployment.annotations.events.DynamoDbTriggerEventSource;
 import com.syndicate.deployment.annotations.lambda.LambdaHandler;
 import com.syndicate.deployment.model.RetentionSetting;
 
@@ -26,6 +28,7 @@ import java.util.logging.Logger;
 	isPublishVersion = false,
 	logsExpiration = RetentionSetting.SYNDICATE_ALIASES_SPECIFIED
 )
+@DynamoDbTriggerEventSource(targetTable = "Configuration", batchSize = 1)
 public class AuditProducer implements RequestHandler<DynamodbEvent, Void> {
 
 	private static final Logger logger = Logger.getLogger(AuditProducer.class.getName());
