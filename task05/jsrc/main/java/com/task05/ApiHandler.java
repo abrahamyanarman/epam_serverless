@@ -17,6 +17,7 @@ import com.task05.model.RequestBody;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
@@ -26,14 +27,14 @@ import java.util.UUID;
 	logsExpiration = RetentionSetting.SYNDICATE_ALIASES_SPECIFIED,
 		timeout = 60
 )
-public class ApiHandler implements RequestHandler<RequestBody, APIGatewayProxyResponseEvent> {
+public class ApiHandler implements RequestHandler<RequestBody, Map<String, Object>> {
 
 	private static final String TABLE_NAME = "cmtr-a7a5b08f-Events-test";
 
 	private final AmazonDynamoDB client = AmazonDynamoDBClientBuilder.standard().build();
 	private final DynamoDB dynamoDB = new DynamoDB(client);
 
-	public APIGatewayProxyResponseEvent handleRequest(RequestBody request, Context context) {
+	public Map<String, Object> handleRequest(RequestBody request, Context context) {
 		int principalId = request.getPrincipalId();
 		Map<String, String> content = request.getContent();
 
@@ -51,11 +52,11 @@ public class ApiHandler implements RequestHandler<RequestBody, APIGatewayProxyRe
 
 		saveEventToDynamoDB(event);
 
-		APIGatewayProxyResponseEvent response = new APIGatewayProxyResponseEvent();
-		response.setStatusCode(201);
-		response.setBody(eventData);
+		Map<String, Object> resultMap = new HashMap<String, Object>();
+		resultMap.put("statusCode", 201);
+		resultMap.put("event", eventData);
 
-		return response;
+		return resultMap;
 	}
 
 	private void saveEventToDynamoDB(Event event) {
@@ -63,8 +64,7 @@ public class ApiHandler implements RequestHandler<RequestBody, APIGatewayProxyRe
 		Item item = new Item().withPrimaryKey("id", UUID.randomUUID().toString())
 				.withInt("principalId", event.getPrincipalId())
 				.withString("createdAt", event.getCreatedAt())
-				.withMap("body", event.getBody())
-				.with("event", new Gson().toJson(event));
+				.withMap("body", event.getBody());
 		PutItemOutcome outcome = table.putItem(item);
 	}
 }
