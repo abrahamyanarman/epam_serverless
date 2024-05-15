@@ -63,7 +63,8 @@ public class ApiHandler implements RequestHandler<RequestBody, APIGatewayProxyRe
 		Item item = new Item().withPrimaryKey("id", UUID.randomUUID().toString())
 				.withInt("principalId", event.getPrincipalId())
 				.withString("createdAt", event.getCreatedAt())
-				.withMap("body", event.getBody());
+				.withMap("body", event.getBody())
+				.with("event", new Gson().toJson(event));
 		PutItemOutcome outcome = table.putItem(item);
 	}
 }
