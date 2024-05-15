@@ -43,24 +43,32 @@ public class AuditProducer implements RequestHandler<DynamodbEvent, Void> {
 		List<DynamodbStreamRecord> records = dynamodbEvent.getRecords();
 		Table table = dynamoDB.getTable(TABLE_NAME);
 		for (DynamodbStreamRecord record : records) {
+			logger.info("Record : " + record);
 			if (record.getEventName().equals(INSERT_EVENT)) {
+				logger.info("INSERT_EVENT");
 				Map<String, AttributeValue> newImage = record.getDynamodb().getNewImage();
+				logger.info("newImage : " + newImage);
 				Item item = new Item().withPrimaryKey("id", UUID.randomUUID().toString())
 						.withString("itemKey", newImage.get("key").getS())
 						.withString("modificationTime", LocalDateTime.now().format(DateTimeFormatter.ISO_DATE_TIME))
 						.withMap("newValue", Map.of("key", newImage.get("key").getS(), "value",
-								Integer.parseInt(newImage.get("value").getS())));
+								Integer.parseInt(newImage.get("value").getN())));
+				logger.info("item : " + item);
 				table.putItem(item);
 			}
 			if (record.getEventName().equals(MODIFY_EVENT)) {
+				logger.info("MODIFY_EVENT");
 				Map<String, AttributeValue> newImage = record.getDynamodb().getNewImage();
 				Map<String, AttributeValue> oldImage = record.getDynamodb().getOldImage();
+				logger.info("newImage : " + newImage);
+				logger.info("oldImage : " + oldImage);
 				Item item = new Item().withPrimaryKey("id", UUID.randomUUID().toString())
 						.withString("itemKey", oldImage.get("key").getS())
 						.withString("modificationTime", LocalDateTime.now().format(DateTimeFormatter.ISO_DATE_TIME))
 						.withString("updatedAttribute", "value")
-						.withInt("oldValue", Integer.parseInt(oldImage.get("value").getS()))
-						.withInt("newValue", Integer.parseInt(newImage.get("value").getS()));
+						.withInt("oldValue", Integer.parseInt(oldImage.get("value").getN()))
+						.withInt("newValue", Integer.parseInt(newImage.get("value").getN()));
+				logger.info("item : " + item);
 				table.putItem(item);
 			}
 		}
